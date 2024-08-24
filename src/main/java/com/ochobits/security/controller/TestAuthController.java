@@ -1,30 +1,38 @@
 package com.ochobits.security.controller;
 
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/auth")
-@PreAuthorize("denyAll()")/*PARA TRABAJAR CON RESTRICCIONES POR ANOTACIONES, ESTE NIEGA TODO*/
+//@PreAuthorize("denyAll()")/*PARA TRABAJAR CON RESTRICCIONES POR ANOTACIONES, ESTE NIEGA TODO*/
 public class TestAuthController {
 
-    @GetMapping("/hello")
-    @PreAuthorize("permitAll()")
-    public String hello(){
-        return "Hello test";
+    @GetMapping("/get")
+//    @PreAuthorize("hasAuthority('READ')")
+    public String helloGet(){
+        return "Hello world - GET";
     }
 
-    @GetMapping("/hello-secured")
-    @PreAuthorize("hasAnyAuthority('READ')")
-    public String helloSecured(){
-        return "Hello Test Secured";
+    @PostMapping("/post")
+//    @PreAuthorize("hasAuthority('CREATE') or hasAuthority('READ')")
+    public String helloPost(){
+        return "Hello world - POST";
     }
 
-    @GetMapping("/hello-secured2")
-    @PreAuthorize("hasAnyAuthority('CREATE')")
-    public String helloSecured2(){
-        return "Hello Test Secured2";
+    @PutMapping("/put")
+    public String helloPut(){
+        return "Hello world - PUT";
+    }
+
+    @DeleteMapping("/delete")
+    public String helloDelete(){
+        return "Hello world - DELETE";
+    }
+
+    @PatchMapping("/patch")
+//    @PreAuthorize("hasAuthority('REFACTOR')")
+    public String helloPatch(){
+        return "Hello world - PATCH";
     }
 }
