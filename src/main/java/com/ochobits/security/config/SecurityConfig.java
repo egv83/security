@@ -1,7 +1,8 @@
 package com.ochobits.security.config;
 
+import com.ochobits.security.config.filter.JwtTokenValidator;
 import com.ochobits.security.service.UserDetailServiceImpl;
-import org.springframework.cglib.proxy.NoOp;
+import com.ochobits.security.util.JwtUtils;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -14,22 +15,21 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
-
-import java.util.ArrayList;
-import java.util.List;
+import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
 public class SecurityConfig {
+
+    private JwtUtils jwtUtils;
+
+    public SecurityConfig(JwtUtils jwtUtils) {
+        this.jwtUtils = jwtUtils;
+    }
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
@@ -39,7 +39,7 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) /*PERMITE TRABAJAR CON ESTADOS DE SESION, ES MEJOR TRABAJAR CON STATELESS*/
                 .authorizeHttpRequests(auth->{
                     /*CONFIGURAR ENDPOINTS PUBLICOS*/
-                    auth.requestMatchers(HttpMethod.GET,"/auth/get").permitAll();/*PERMITE EL ACCESO A TODOS*/
+                    auth.requestMatchers(HttpMethod.POST,"/auth/**").permitAll();/*PERMITE EL ACCESO A TODOS*/
 
                     /*CONFIGURAR ENDPOINTS PRIVADOS*/
 //                    auth.requestMatchers(HttpMethod.POST, "/auth/post").hasRole("ADMIN");/*PERMITE VALIDAR POR 1 ROL*/
@@ -53,6 +53,7 @@ public class SecurityConfig {
                     auth.anyRequest().denyAll();/*NIEGA EN ACCESO A CUALQUIER OTRO ENDPOINT NO ESPECIFICADO*/
                     /*auth.anyRequest().authenticated();/*PERMITE EL ACCESO A CUALQUIER ENDPOINT NO ESPECIFICADO PERO QUE EL USUARIO ESTE AUNTENTICADO, LOGEADO*/
                 })
+                .addFilterBefore(new JwtTokenValidator(jwtUtils), BasicAuthenticationFilter.class)/*VA A EJECUTAR EL FILTRO ANTES DE QUE SE VALIDE*/
                 .build();
     }
 
