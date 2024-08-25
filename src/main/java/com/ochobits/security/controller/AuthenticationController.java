@@ -1,5 +1,6 @@
 package com.ochobits.security.controller;
 
+import com.ochobits.security.controller.dto.AuthCreateUserRequest;
 import com.ochobits.security.controller.dto.AuthLoginRequest;
 import com.ochobits.security.controller.dto.AuthResponse;
 import com.ochobits.security.service.UserDetailServiceImpl;
@@ -21,11 +22,16 @@ public class AuthenticationController {
         this.userDetailsService = userDetailsService;
     }
 
-    @PostMapping("/login")
+    @PostMapping("/log-in")
     public ResponseEntity<AuthResponse> login(
             @RequestBody @Valid AuthLoginRequest request){
 
         return new ResponseEntity<>(userDetailsService.loginUser(request), HttpStatus.OK);
+    }
+
+    @PostMapping("/sign-up")
+    public ResponseEntity<AuthResponse> register(@RequestBody @Valid AuthCreateUserRequest request){
+        return new ResponseEntity<>(this.userDetailsService.createUser(request),HttpStatus.CREATED);
     }
 
 }

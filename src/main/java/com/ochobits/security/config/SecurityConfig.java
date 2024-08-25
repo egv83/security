@@ -39,15 +39,18 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) /*PERMITE TRABAJAR CON ESTADOS DE SESION, ES MEJOR TRABAJAR CON STATELESS*/
                 .authorizeHttpRequests(auth->{
                     /*CONFIGURAR ENDPOINTS PUBLICOS*/
-                    auth.requestMatchers(HttpMethod.POST,"/auth/**").permitAll();/*PERMITE EL ACCESO A TODOS*/
+                    auth.requestMatchers(HttpMethod.POST,"/auth/**").permitAll();/*PERMITE EL ACCESO A TODOS PARA LOGIN Y CREACION DE CUENTA*/
 
                     /*CONFIGURAR ENDPOINTS PRIVADOS*/
 //                    auth.requestMatchers(HttpMethod.POST, "/auth/post").hasRole("ADMIN");/*PERMITE VALIDAR POR 1 ROL*/
-                    auth.requestMatchers(HttpMethod.POST, "/auth/post").hasAnyRole("ADMIN","DEVELOPER");/*PERMITE VALIDAR POR VARIOS ROLES*/
+                    auth.requestMatchers(HttpMethod.POST, "/methods/post").hasAnyRole("ADMIN","DEVELOPER");/*PERMITE VALIDAR POR VARIOS ROLES*/
 
 
 //                    auth.requestMatchers(HttpMethod.POST,"/auth/post").hasAnyAuthority("CREATE", "READ");/*PERMITE EL ACCESO QUIEN TIENE AUTORIDADES*/
-                    auth.requestMatchers(HttpMethod.PATCH,"/auth/patch").hasAnyAuthority("REFACTOR");
+                    auth.requestMatchers(HttpMethod.PATCH,"/methods/patch").hasAnyAuthority("REFACTOR");
+//                    auth.requestMatchers(HttpMethod.GET,"/methods/get").hasAnyRole("INVITED"); /*PARA PERMITIR EL ACCESO POR ROL*/
+                    auth.requestMatchers(HttpMethod.GET,"/methods/get").hasAnyAuthority("READ"); /*PARA PERMITIR EL ACCESO POR ROL*/
+                    auth.requestMatchers("/methods/**").hasAnyRole("ADMIN","DEVELOPER");
 
                     /*CONFIGURAR EL RESTO DE DE ENDPOINTS - NO ESPECIFICADOS*/
                     auth.anyRequest().denyAll();/*NIEGA EN ACCESO A CUALQUIER OTRO ENDPOINT NO ESPECIFICADO*/
